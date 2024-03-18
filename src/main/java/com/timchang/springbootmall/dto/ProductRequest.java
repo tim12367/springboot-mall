@@ -1,27 +1,31 @@
-package com.timchang.springbootmall.model;
+package com.timchang.springbootmall.dto;
 
 import com.timchang.springbootmall.constant.ProductCategory;
+import jakarta.validation.constraints.NotNull;
 
-import java.util.Date;
-
-public class Product {
-    private Integer productId;
+/**
+ * 負責驗證前端傳來資料
+ */
+public class ProductRequest {
+    //    private Integer productId; // 不需要 由資料庫產生
+    //    private Date createdDate; // 由程式設定
+    //    private Date lastModifiedDate; // 由程式設定
+    @NotNull // 若無此提示 需要添加dependency spring-boot-starter-validation
     private String productName;
+
+    @NotNull
     private ProductCategory category;
+
+    @NotNull
     private String imageUrl;
+
+    @NotNull
     private Integer price;
+
+    @NotNull
     private Integer stock;
-    private String description;
-    private Date createdDate;
-    private Date lastModifiedDate;
 
-    public Integer getProductId() {
-        return productId;
-    }
-
-    public void setProductId(Integer productId) {
-        this.productId = productId;
-    }
+    private String description; // 選填
 
     public String getProductName() {
         return productName;
@@ -69,21 +73,5 @@ public class Product {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public Date getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(Date createdDate) {
-        this.createdDate = createdDate;
-    }
-
-    public Date getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public void setLastModifiedDate(Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
     }
 }

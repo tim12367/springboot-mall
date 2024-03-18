@@ -19,7 +19,7 @@ public class ProductRowMapper implements RowMapper<Product> {
         // String -> enum
         product.setCategory(ProductCategory.valueOf(rs.getString("category")));
 
-        product.setImage_url(rs.getString("image_url"));
+        product.setImageUrl(rs.getString("image_url"));
         product.setPrice(rs.getInt("price"));
         product.setStock(rs.getInt("stock"));
         product.setDescription(rs.getString("description"));
