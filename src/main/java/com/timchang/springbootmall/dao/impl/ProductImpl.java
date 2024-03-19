@@ -110,4 +110,17 @@ public class ProductImpl implements ProductDao {
         
         namedParameterJdbcTemplate.update(sql,param);
     }
+
+    @Override
+    public List<Product> getProducts() {
+        String sql = "SELECT product_id,product_name, category, " +
+                "image_url, price, stock, description, created_date, last_modified_date " +
+                "FROM product";
+
+        Map<String,Object> paramMap = new HashMap<>();
+
+        List<Product> productList = namedParameterJdbcTemplate.query(sql,paramMap,new ProductRowMapper());
+
+        return productList;
+    }
 }
