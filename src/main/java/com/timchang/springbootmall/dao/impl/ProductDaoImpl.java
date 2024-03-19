@@ -1,9 +1,11 @@
 package com.timchang.springbootmall.dao.impl;
 
+import com.timchang.springbootmall.constant.ProductCategory;
 import com.timchang.springbootmall.dao.ProductDao;
 import com.timchang.springbootmall.dto.ProductRequest;
 import com.timchang.springbootmall.model.Product;
 import com.timchang.springbootmall.rowMapper.ProductRowMapper;
+import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -17,7 +19,9 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class ProductImpl implements ProductDao {
+public class ProductDaoImpl implements ProductDao {
+
+    private Logger log = Logger.getLogger(this.getClass());
 
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
@@ -104,22 +108,36 @@ public class ProductImpl implements ProductDao {
     @Override
     public void deleteProductById(Integer productId) {
         String sql = "DELETE FROM product WHERE product_id = :product_id";
-        
-        Map<String,Object> param = new HashMap<>();
+
+        Map<String, Object> param = new HashMap<>();
         param.put("product_id", productId);
-        
-        namedParameterJdbcTemplate.update(sql,param);
+
+        namedParameterJdbcTemplate.update(sql, param);
     }
 
     @Override
-    public List<Product> getProducts() {
+    public List<Product> getProducts(ProductCategory category, String search) {
         String sql = "SELECT product_id,product_name, category, " +
                 "image_url, price, stock, description, created_date, last_modified_date " +
-                "FROM product";
+                "FROM product WHERE 1=1";
 
-        Map<String,Object> paramMap = new HashMap<>();
+        Map<String, Object> paramMap = new HashMap<>();
 
-        List<Product> productList = namedParameterJdbcTemplate.query(sql,paramMap,new ProductRowMapper());
+        // 分類查詢
+        if (category != null) {
+            sql += " AND category = :category"; // 拼接要記得加空白
+            paramMap.put("category", category.name()); // enum要用name取String
+        }
+
+        // 關鍵字查詢
+        if (search != null) {
+            sql += " AND product_name LIKE :search";
+            paramMap.put("search", "%" + search + "%"); // 模糊查詢%不能寫在SQL內
+        }
+
+        List<Product> productList = namedParameterJdbcTemplate.query(sql, paramMap, new ProductRowMapper());
+
+        log.debug(sql);
 
         return productList;
     }

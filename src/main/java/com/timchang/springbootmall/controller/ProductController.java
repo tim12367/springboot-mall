@@ -1,5 +1,6 @@
 package com.timchang.springbootmall.controller;
 
+import com.timchang.springbootmall.constant.ProductCategory;
 import com.timchang.springbootmall.dto.ProductRequest;
 import com.timchang.springbootmall.model.Product;
 import com.timchang.springbootmall.service.ProductService;
@@ -18,8 +19,11 @@ public class ProductController {
     private ProductService productService;
 
     @GetMapping("/products")
-    public ResponseEntity<List<Product>> getProducts() {
-        List<Product> productList = productService.getProducts();
+    public ResponseEntity<List<Product>> getProducts(
+            @RequestParam(required = false) ProductCategory category, // (required = false) 標記為非必要
+            @RequestParam(required = false) String search
+    ) {
+        List<Product> productList = productService.getProducts(category, search);
 
         // 因為RESTFUL風格 查全部查無也OK 與查單個不同
         return ResponseEntity.status(HttpStatus.OK).body(productList);
