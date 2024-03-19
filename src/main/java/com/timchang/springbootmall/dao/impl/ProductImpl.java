@@ -27,10 +27,10 @@ public class ProductImpl implements ProductDao {
         String sql = "SELECT product_id,product_name, category, " +
                 "image_url, price, stock, description, created_date, last_modified_date " +
                 "FROM product WHERE product_id = :product_id";
-        Map<String, Object> map = new HashMap<>();
-        map.put("product_id", productId);
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("product_id", productId);
 
-        List<Product> productList = namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
+        List<Product> productList = namedParameterJdbcTemplate.query(sql, paramMap, new ProductRowMapper());
 
         if (productList.size() > 0) {
             return productList.get(0);
@@ -51,23 +51,23 @@ public class ProductImpl implements ProductDao {
                 "            :last_modified_date)";
 
         // SQL參數
-        Map<String, Object> param = new HashMap<>();
-        param.put("product_name", productRequest.getProductName());
-        param.put("category", productRequest.getCategory().toString()); // enum -> string
-        param.put("image_url", productRequest.getImageUrl());
-        param.put("price", productRequest.getPrice());
-        param.put("stock", productRequest.getStock());
-        param.put("description", productRequest.getDescription());
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("product_name", productRequest.getProductName());
+        paramMap.put("category", productRequest.getCategory().toString()); // enum -> string
+        paramMap.put("image_url", productRequest.getImageUrl());
+        paramMap.put("price", productRequest.getPrice());
+        paramMap.put("stock", productRequest.getStock());
+        paramMap.put("description", productRequest.getDescription());
 
         Date now = new Date();
-        param.put("created_date", now);
-        param.put("last_modified_date", now);
+        paramMap.put("created_date", now);
+        paramMap.put("last_modified_date", now);
 
         // 接SQL產生流水號
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         // 執行
-        namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(param), keyHolder);
+        namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(paramMap), keyHolder);
 
         // 倒出流水號
         int productId = keyHolder.getKey().intValue();
@@ -86,18 +86,28 @@ public class ProductImpl implements ProductDao {
                 "    description = :description,\n" +
                 "    last_modified_date = :last_modified_date\n" +
                 "WHERE product_id = :product_id";
-        Map<String, Object> param = new HashMap<>();
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("product_id", productId);
+
+        paramMap.put("product_name", productRequest.getProductName());
+        paramMap.put("category", productRequest.getCategory().toString());
+        paramMap.put("image_url", productRequest.getImageUrl());
+        paramMap.put("price", productRequest.getPrice());
+        paramMap.put("stock", productRequest.getStock());
+        paramMap.put("description", productRequest.getDescription());
+
+        paramMap.put("last_modified_date", new Date());
+
+        namedParameterJdbcTemplate.update(sql, paramMap);
+    }
+
+    @Override
+    public void deleteProductById(Integer productId) {
+        String sql = "DELETE FROM product WHERE product_id = :product_id";
+        
+        Map<String,Object> param = new HashMap<>();
         param.put("product_id", productId);
-
-        param.put("product_name", productRequest.getProductName());
-        param.put("category", productRequest.getCategory().toString());
-        param.put("image_url", productRequest.getImageUrl());
-        param.put("price", productRequest.getPrice());
-        param.put("stock", productRequest.getStock());
-        param.put("description", productRequest.getDescription());
-
-        param.put("last_modified_date", new Date());
-
-        namedParameterJdbcTemplate.update(sql, param);
+        
+        namedParameterJdbcTemplate.update(sql,param);
     }
 }
