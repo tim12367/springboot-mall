@@ -149,4 +149,26 @@ public class ProductDaoImpl implements ProductDao {
 
         return productList;
     }
+
+    @Override
+    public Integer countProduct(ProductQueryParams productQueryParams) {
+        String sql = "SELECT COUNT(*) FROM product WHERE 1=1";
+
+        Map<String, Object> paramMap = new HashMap<>();
+
+        // 分類查詢
+        if (productQueryParams.getCategory() != null) {
+            sql += " AND category = :category"; // 拼接要記得加空白
+            paramMap.put("category", productQueryParams.getCategory().name()); // enum要用name取String
+        }
+
+        // 關鍵字查詢
+        if (productQueryParams.getSearch() != null) {
+            sql += " AND product_name LIKE :search";
+            paramMap.put("search", "%" + productQueryParams.getSearch() + "%"); // 模糊查詢%不能寫在SQL內
+        }
+
+        Integer total = namedParameterJdbcTemplate.queryForObject(sql, paramMap, Integer.class);
+        return total;
+    }
 }
