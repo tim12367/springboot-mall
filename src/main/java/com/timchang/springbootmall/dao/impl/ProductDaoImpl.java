@@ -1,7 +1,7 @@
 package com.timchang.springbootmall.dao.impl;
 
-import com.timchang.springbootmall.constant.ProductCategory;
 import com.timchang.springbootmall.dao.ProductDao;
+import com.timchang.springbootmall.dao.ProductQueryParams;
 import com.timchang.springbootmall.dto.ProductRequest;
 import com.timchang.springbootmall.model.Product;
 import com.timchang.springbootmall.rowMapper.ProductRowMapper;
@@ -116,7 +116,7 @@ public class ProductDaoImpl implements ProductDao {
     }
 
     @Override
-    public List<Product> getProducts(ProductCategory category, String search) {
+    public List<Product> getProducts(ProductQueryParams productQueryParams) {
         String sql = "SELECT product_id,product_name, category, " +
                 "image_url, price, stock, description, created_date, last_modified_date " +
                 "FROM product WHERE 1=1";
@@ -124,15 +124,15 @@ public class ProductDaoImpl implements ProductDao {
         Map<String, Object> paramMap = new HashMap<>();
 
         // 分類查詢
-        if (category != null) {
+        if (productQueryParams.getCategory() != null) {
             sql += " AND category = :category"; // 拼接要記得加空白
-            paramMap.put("category", category.name()); // enum要用name取String
+            paramMap.put("category", productQueryParams.getCategory().name()); // enum要用name取String
         }
 
         // 關鍵字查詢
-        if (search != null) {
+        if (productQueryParams.getSearch() != null) {
             sql += " AND product_name LIKE :search";
-            paramMap.put("search", "%" + search + "%"); // 模糊查詢%不能寫在SQL內
+            paramMap.put("search", "%" + productQueryParams.getSearch() + "%"); // 模糊查詢%不能寫在SQL內
         }
 
         List<Product> productList = namedParameterJdbcTemplate.query(sql, paramMap, new ProductRowMapper());

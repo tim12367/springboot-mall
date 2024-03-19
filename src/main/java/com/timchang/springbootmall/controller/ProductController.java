@@ -1,6 +1,7 @@
 package com.timchang.springbootmall.controller;
 
 import com.timchang.springbootmall.constant.ProductCategory;
+import com.timchang.springbootmall.dao.ProductQueryParams;
 import com.timchang.springbootmall.dto.ProductRequest;
 import com.timchang.springbootmall.model.Product;
 import com.timchang.springbootmall.service.ProductService;
@@ -23,7 +24,12 @@ public class ProductController {
             @RequestParam(required = false) ProductCategory category, // (required = false) 標記為非必要
             @RequestParam(required = false) String search
     ) {
-        List<Product> productList = productService.getProducts(category, search);
+        // 改用ProductQueryParams 傳遞參數 避免新增變數就需要修改
+        ProductQueryParams productQueryParams = new ProductQueryParams();
+        productQueryParams.setCategory(category);
+        productQueryParams.setSearch(search);
+
+        List<Product> productList = productService.getProducts(productQueryParams);
 
         // 因為RESTFUL風格 查全部查無也OK 與查單個不同
         return ResponseEntity.status(HttpStatus.OK).body(productList);

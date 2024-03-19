@@ -1,6 +1,6 @@
 package com.timchang.springbootmall.service;
 
-import com.timchang.springbootmall.constant.ProductCategory;
+import com.timchang.springbootmall.dao.ProductQueryParams;
 import com.timchang.springbootmall.dto.ProductRequest;
 import com.timchang.springbootmall.model.Product;
 
@@ -15,5 +15,5 @@ public interface ProductService {
 
     void deleteProductById(Integer productId);
 
-    List<Product> getProducts(ProductCategory category, String search);
+    List<Product> getProducts(ProductQueryParams productQueryParams);
 }
