@@ -123,17 +123,8 @@ public class ProductDaoImpl implements ProductDao {
 
         Map<String, Object> paramMap = new HashMap<>();
 
-        // 分類查詢
-        if (productQueryParams.getCategory() != null) {
-            sql += " AND category = :category"; // 拼接要記得加空白
-            paramMap.put("category", productQueryParams.getCategory().name()); // enum要用name取String
-        }
-
-        // 關鍵字查詢
-        if (productQueryParams.getSearch() != null) {
-            sql += " AND product_name LIKE :search";
-            paramMap.put("search", "%" + productQueryParams.getSearch() + "%"); // 模糊查詢%不能寫在SQL內
-        }
+        // 查詢條件
+        sql = addFilteringSql(sql, paramMap, productQueryParams);
 
         // 排序 需要用字串拼接
         sql += " ORDER BY :orderBy :sort";
@@ -156,6 +147,22 @@ public class ProductDaoImpl implements ProductDao {
 
         Map<String, Object> paramMap = new HashMap<>();
 
+        // 查詢條件
+        sql = addFilteringSql(sql, paramMap, productQueryParams);
+
+        Integer total = namedParameterJdbcTemplate.queryForObject(sql, paramMap, Integer.class);
+        return total;
+    }
+
+    /**
+     * 拼接查詢條件SQL
+     *
+     * @param sql SQL 字串
+     * @param paramMap SQL插值 Map
+     * @param productQueryParams 查詢條件
+     * @return 拼接好的 SQL
+     */
+    private String addFilteringSql(String sql, Map<String, Object> paramMap, ProductQueryParams productQueryParams) {
         // 分類查詢
         if (productQueryParams.getCategory() != null) {
             sql += " AND category = :category"; // 拼接要記得加空白
@@ -168,7 +175,6 @@ public class ProductDaoImpl implements ProductDao {
             paramMap.put("search", "%" + productQueryParams.getSearch() + "%"); // 模糊查詢%不能寫在SQL內
         }
 
-        Integer total = namedParameterJdbcTemplate.queryForObject(sql, paramMap, Integer.class);
-        return total;
+        return sql;
     }
 }
