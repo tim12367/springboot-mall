@@ -135,7 +135,15 @@ public class ProductDaoImpl implements ProductDao {
             paramMap.put("search", "%" + productQueryParams.getSearch() + "%"); // 模糊查詢%不能寫在SQL內
         }
 
-        sql += " ORDER BY " + productQueryParams.getOrderBy() + " " + productQueryParams.getSort();
+        // 排序 需要用字串拼接
+        sql += " ORDER BY :orderBy :sort";
+        paramMap.put("orderBy", productQueryParams.getOrderBy());
+        paramMap.put("sort", productQueryParams.getSort());
+
+        // 分頁
+        sql += " LIMIT :limit OFFSET :offset ";
+        paramMap.put("limit", productQueryParams.getLimit());
+        paramMap.put("offset", productQueryParams.getOffset());
 
         List<Product> productList = namedParameterJdbcTemplate.query(sql, paramMap, new ProductRowMapper());
 
