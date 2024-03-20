@@ -1,12 +1,19 @@
 package com.timchang.springbootmall.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.Date;
 
 public class User {
 
     private Integer userId;
+
+    // @JsonProperty("e_mail") // 修改轉JSON時的key
     private String email;
+
+    @JsonIgnore // 因為需遮蔽密碼 所以轉JSON時 跳過
     private String password;
+
     private Date createDate;
     private Date lastModifiedDate;
 
