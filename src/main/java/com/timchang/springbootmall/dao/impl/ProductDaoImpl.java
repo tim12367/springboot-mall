@@ -127,9 +127,7 @@ public class ProductDaoImpl implements ProductDao {
         sql = addFilteringSql(sql, paramMap, productQueryParams);
 
         // 排序 需要用字串拼接
-        sql += " ORDER BY :orderBy :sort";
-        paramMap.put("orderBy", productQueryParams.getOrderBy());
-        paramMap.put("sort", productQueryParams.getSort());
+        sql += " ORDER BY " + productQueryParams.getOrderBy() + " " + productQueryParams.getSort();
 
         // 分頁
         sql += " LIMIT :limit OFFSET :offset ";
