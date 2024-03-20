@@ -126,7 +126,7 @@ public class ProductDaoImpl implements ProductDao {
         // 查詢條件
         sql = addFilteringSql(sql, paramMap, productQueryParams);
 
-        // 排序 需要用字串拼接
+        // 排序 需要用字串拼接 不然 H2 DB會噴錯
         sql += " ORDER BY " + productQueryParams.getOrderBy() + " " + productQueryParams.getSort();
 
         // 分頁
