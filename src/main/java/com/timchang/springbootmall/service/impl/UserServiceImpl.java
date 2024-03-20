@@ -1,6 +1,7 @@
 package com.timchang.springbootmall.service.impl;
 
 import com.timchang.springbootmall.dao.UserDao;
+import com.timchang.springbootmall.dto.UserLoginRequest;
 import com.timchang.springbootmall.dto.UserRegisterRequest;
 import com.timchang.springbootmall.model.User;
 import com.timchang.springbootmall.service.UserService;
@@ -37,5 +38,21 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserById(Integer userId) {
         return userDao.getUserById(userId);
+    }
+
+    @Override
+    public User login(UserLoginRequest userLoginRequest) {
+        User user = userDao.getUserByEmail(userLoginRequest.getEmail());
+        if (user == null) {
+            log.warn("該email {} 尚未註冊", userLoginRequest.getEmail());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "email商未註冊!");
+        }
+
+        if (user.getPassword().equals(userLoginRequest.getPassword())) {
+            return user;
+        } else {
+            log.warn("email {} 的密碼不正確!", userLoginRequest.getEmail());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "密碼不正確!");
+        }
     }
 }
