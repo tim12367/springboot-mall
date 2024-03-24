@@ -5,7 +5,8 @@ import com.timchang.springbootmall.dao.ProductQueryParams;
 import com.timchang.springbootmall.dto.ProductRequest;
 import com.timchang.springbootmall.model.Product;
 import com.timchang.springbootmall.rowMapper.ProductRowMapper;
-import org.jboss.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -21,7 +22,7 @@ import java.util.Map;
 @Component
 public class ProductDaoImpl implements ProductDao {
 
-    private Logger log = Logger.getLogger(this.getClass());
+    private static final Logger logger = LoggerFactory.getLogger(ProductDao.class);
 
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
@@ -152,11 +153,25 @@ public class ProductDaoImpl implements ProductDao {
         return total;
     }
 
+    @Override
+    public void updateStock(Integer productId, Integer i) {
+        String sql = "UPDATE product " +
+                "SET stock = :stock, last_modified_date = :lastModifiedDate " +
+                "WHERE product_id = :productId";
+
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("stock", i);
+        paramMap.put("lastModifiedDate", new Date());
+        paramMap.put("productId", productId);
+
+        namedParameterJdbcTemplate.update(sql, paramMap);
+    }
+
     /**
      * 拼接查詢條件SQL
      *
-     * @param sql SQL 字串
-     * @param paramMap SQL插值 Map
+     * @param sql                SQL 字串
+     * @param paramMap           SQL插值 Map
      * @param productQueryParams 查詢條件
      * @return 拼接好的 SQL
      */
